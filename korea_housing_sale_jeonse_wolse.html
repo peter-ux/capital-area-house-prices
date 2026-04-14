@@ -1,0 +1,117 @@
+
+<h2 class="sr-only">수도권 주택 매매·전세·월세 평균가격 추이 (2022년 1월 ~ 2026년 2월)</h2>
+
+<div style="padding: 1rem 0 0.5rem;">
+  <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px;">수도권 · 주택종합 평균가격</div>
+
+  <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;background:#378ADD;display:inline-block;border-radius:2px;"></span>매매 (만원, 좌)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;background:#1D9E75;display:inline-block;border-radius:2px;"></span>전세 (만원, 좌)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:3px;background:#E24B4A;display:inline-block;border-radius:2px;border-top:2px dashed #E24B4A;"></span>월세 (천원, 우)</span>
+  </div>
+
+  <div style="position:relative;width:100%;height:360px;">
+    <canvas id="chart" role="img" aria-label="수도권 주택 매매·전세·월세 평균가격 2022년 1월부터 2026년 2월까지 추이">수도권 주택 가격 데이터</canvas>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = [
+  "2022.01","2022.02","2022.03","2022.04","2022.05","2022.06","2022.07","2022.08","2022.09","2022.10","2022.11","2022.12",
+  "2023.01","2023.02","2023.03","2023.04","2023.05","2023.06","2023.07","2023.08","2023.09","2023.10","2023.11","2023.12",
+  "2024.01","2024.02","2024.03","2024.04","2024.05","2024.06","2024.07","2024.08","2024.09","2024.10","2024.11","2024.12",
+  "2025.01","2025.02","2025.03","2025.04","2025.05","2025.06","2025.07","2025.08","2025.09","2025.10","2025.11","2025.12",
+  "2026.01","2026.02"
+];
+
+const sale = [627130,626828,626350,626399,625854,625325,624369,621669,617175,610095,598532,582248,566452,558706,554192,551932,552065,553372,555503,558173,561364,563887,564774,564292,565881,565083,564820,565341,566138,568612,573495,579205,583238,585498,586869,587434,587462,588440,592325,598293,600949,607803,613106,615482,618476,625710,630520,635583,640761,646207].map(v=>Math.round(v/10000));
+
+const jeonse = [368592,368105,367409,367039,366965,366574,365955,364284,361321,356061,346926,333145,320773,311469,306336,304067,303661,303851,304513,306059,307990,310516,312502,313546,316208,316652,317341,318208,319236,320471,322201,324096,325730,327051,327808,328020,328043,328061,328486,332712,333064,333679,334247,334734,335602,337051,338917,341046,342789,345462].map(v=>Math.round(v/10000));
+
+const wolse = [943,944,946,947,950,951,955,956,958,960,957,950,940,936,933,932,933,934,935,937,939,941,945,948,958,960,962,964,966,969,973,976,980,983,986,988,989,991,993,1021,1023,1026,1029,1031,1035,1040,1046,1053,1059,1066];
+
+const ctx = document.getElementById('chart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: '매매',
+        data: sale,
+        borderColor: '#378ADD',
+        backgroundColor: 'rgba(55,138,221,0.07)',
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        fill: true,
+        tension: 0.3,
+        yAxisID: 'y'
+      },
+      {
+        label: '전세',
+        data: jeonse,
+        borderColor: '#1D9E75',
+        backgroundColor: 'rgba(29,158,117,0.07)',
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        fill: true,
+        tension: 0.3,
+        yAxisID: 'y'
+      },
+      {
+        label: '월세',
+        data: wolse,
+        borderColor: '#E24B4A',
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        borderDash: [4,3],
+        pointRadius: 0,
+        pointHoverRadius: 3,
+        fill: false,
+        tension: 0.3,
+        yAxisID: 'y2'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const v = ctx.parsed.y;
+            if (ctx.datasetIndex === 2) return ' 월세: ' + v.toLocaleString() + '천원';
+            return ' ' + ctx.dataset.label + ': ' + v.toLocaleString() + '만원';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { autoSkip: true, maxTicksLimit: 12, maxRotation: 30, font: { size: 11 }, color: '#888780' },
+        grid: { color: 'rgba(136,135,128,0.12)' }
+      },
+      y: {
+        position: 'left',
+        title: { display: true, text: '매매 / 전세 (만원)', font: { size: 11 }, color: '#444441' },
+        ticks: { font: { size: 11 }, color: '#888780', callback: v => v.toLocaleString() },
+        grid: { color: 'rgba(136,135,128,0.12)' }
+      },
+      y2: {
+        position: 'right',
+        title: { display: true, text: '월세 (천원)', font: { size: 11 }, color: '#E24B4A' },
+        ticks: { font: { size: 11 }, color: '#888780', callback: v => v.toLocaleString() },
+        grid: { drawOnChartArea: false },
+        min: 880,
+        max: 1120
+      }
+    }
+  }
+});
+</script>
